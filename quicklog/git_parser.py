@@ -3,6 +3,7 @@
 import subprocess
 import shlex
 from typing import List,Tuple, Optional
+from .models import Commit
 
 #--- 1.Funzione di Utility Principale ---
 
@@ -64,3 +65,44 @@ def get_git_log_raw(format_string: str) -> Tuple[Optional[str], Optional[str]]:
 
     #Esegue il comaando traamite la funzione utlity
     return run_git_command(logs_args)
+
+def get_git_log_raw(limit: int = 10) -> Tuple[Optional[str], Optional[str]]:
+   # Definiamo un formato personalizzato per Git:
+   # %h = hash breve, %H = hash full, %an = nome autore, %ae = email, %at = timestamp, %s = messaggio
+   # Usiamo '|' come separatore perché è raaro nei mex commit.
+
+   fmt = "%h|%H|%an|%se|%at|%s"
+
+   args = ['log', f'--pretty=format:{fmt}',f'-n{limit}']
+   return run_git_command(args)
+
+
+"""Trasforma la stringa grezza di output di Git in una lista di oggetti Commiit"""
+
+def parse_commits(raw_output: str) -> List[Commit]:
+
+   commits = []
+
+   if not raw_output:
+      return commits
+   
+   # Divide le righe . Ogni riga è un commit (grazie all'integrazione del formato che utilizzo)
+   lines = raw_output.strip().split('\n')
+
+   for line in lines:
+      # Esempio di riga grezza che il sistema si aspetterebbe
+      # "hash_breve|hash_full|autore|email|timestamp|messaggio"
+       parts = line.split('|')
+
+       if len(parts) >= 6:
+          #Creazione di un object 'Commit' "spacchettando" i pezzi 
+          c = Commit(
+            hash_short=parts[0],
+            hash_full=parts[1],
+            author_name=parts[2],
+            author_email=[3],
+            timestamp=int(parts[4]),
+            message=parts[5]
+          )
+          commits.append(c)
+   return commits

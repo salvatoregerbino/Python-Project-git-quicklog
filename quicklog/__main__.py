@@ -1,22 +1,29 @@
-# quicklog.py (nella directory radice)
-
-# Rimuovi: import sys 
-# Rimuovi: sys.path.insert(0, '.') 
-# Lascia solo l'importazione diretta:
-from quicklog.git_parser import run_git_command
+#
+from .git_parser import get_git_log_raw, parse_commits #Impo
 
 def main():
-    print("--- Test del Modulo Git Parser ---")
+    print("--- Git QuickLog:  Test Modelli ---")
     
-    stdout, stderr = run_git_command(['log', '--max-count=1'])
+    stdout, stderr = get_git_log_raw(limit=5)
     
+    # 1. Importazione dei dati grezzi con il formato speciale pensato
     if stderr:
         print(f"\nERRORE RILEVATO:\n{stderr}")
-    else:
-        print("\nComando eseguito con successo!")
-        print("Output STDOUT (Ultimo Commit):\n")
-        print(stdout.splitlines()[0]) 
-        print("...")
+        return
+    
+    # 2. Trasformare il text in objects
+    commits = parse_commits(stdout)
+
+    # 3. Stampa i riusltati usando la property dell'object 
+
+    print(f"Trovati {len(commits)} commit:\n")
+    
+    for commit in commits:
+        # Uso di .hash_short e .date_str definit nel models
+        print(f"[{commit.date_str}] {commit.hash_short} - {commit.author_name}")
+        print(f"   Messaggio: {commit.message}")
+        print("-" * 40)
+        
 
 if __name__ == "__main__":
     main()
