@@ -35,6 +35,18 @@ def parse_args():
         default=None,
         help="Filtro per i commit precedenti a questa data (e.g. '2025-01-01' o '1 week ago') (default: None)",
     )
+    parser.add_argument(
+        "--grep",
+        type=str,
+        default=None,
+        help="Filtro per i commit con messaggio contenente questa stringa (default: None)",
+    )
+    parser.add_argument(
+        "--path",
+        type=str,
+        default=None,
+        help="Filtro per i commit che hanno modificato questo percorso (default: None)",
+    )
     return parser.parse_args()
 
 
@@ -48,6 +60,8 @@ def main():
         "author": args.author,
         "since": args.since,
         "until": args.until,
+        "grep": args.grep,
+        "path": args.path,
     }
 
     print("--- Git QuickLog:  Caricamento dei Dati ---")

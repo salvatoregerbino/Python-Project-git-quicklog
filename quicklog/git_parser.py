@@ -75,7 +75,7 @@ def get_git_log_raw(filters: dict) -> Tuple[Optional[str], Optional[str]]:
     # %h = hash breve, %H = hash full, %an = nome autore, %ae = email, %at = timestamp, %s = messaggio
     # Usiamo '|' come separatore perché è raaro nei mex commit.
 
-    fmt = "%h|%H|%an|%se|%at|%s"
+    fmt = "%h|%H|%an|%ae|%at|%s"
 
     # --- 1. Costruzione del Comando Base ---
     logs_args = ["log", f"--pretty=format:{fmt}"]
@@ -87,14 +87,27 @@ def get_git_log_raw(filters: dict) -> Tuple[Optional[str], Optional[str]]:
     # Author
     if filters.get("author"):
         logs_args.append(f"--author={filters['author']}")
+
+    # Grep (Ricerca Per Messaggio)
+    if filters.get("grep"):
+        logs_args.append(f"--grep={filters['grep']}")
+        logs_args.append(
+            "-i"
+        )  # Aggiunge l'opzione -i per la ricerca non case-sensitive
+
+    # --- 2. Aggiunta dei filtri Per Percorso---
     # Since (Data Inzio)
     if filters.get("since"):
         logs_args.append(f"--since={filters['since']}")
     # Until (Data Fine)
     if filters.get("until"):
         logs_args.append(f"--until={filters['until']}")
+    # Path (Percorso)
+    if filters.get("path"):
+        logs_args.append("--")  # Separatore di argomenti Git
+        logs_args.append(filters["path"])  # Il percorso stesso
 
-    # --- 3. Esecuzione del Comando ---
+    # --- 4. Esecuzione del Comando ---
     logs_args.append("--all")  # Mantiene l'opzione per includere tutti i branch
     return run_git_command(logs_args)
 
