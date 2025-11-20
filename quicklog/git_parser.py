@@ -64,24 +64,39 @@ Una tupla contenente (output_grezzo, messaggio_di_errore).
 """
 
 
-def get_git_log_raw(format_string: str) -> Tuple[Optional[str], Optional[str]]:
-    # Questo è il comando Git fondamentalae per il recuper di dati che ho deciso di utilzzare.
-    # Utilizzo '--pretty=format:' per un output pulito, faacile daa analaizzare (parsing):
-    logs_args = ["log", f"--pretty=format:{format_string}", "--all"]
+def get_git_log_raw(filters: dict) -> Tuple[Optional[str], Optional[str]]:
+    """
+    Costruisce il comando git log con i filtri forniti e lo esegue.
 
-    # Esegue il comaando traamite la funzione utlity
-    return run_git_command(logs_args)
-
-
-def get_git_log_raw(limit: int = 10) -> Tuple[Optional[str], Optional[str]]:
+    Args:
+        filters: Dizionario contenente 'limit', 'author', 'since', 'until'.
+    """
     # Definiamo un formato personalizzato per Git:
     # %h = hash breve, %H = hash full, %an = nome autore, %ae = email, %at = timestamp, %s = messaggio
     # Usiamo '|' come separatore perché è raaro nei mex commit.
 
     fmt = "%h|%H|%an|%se|%at|%s"
 
-    args = ["log", f"--pretty=format:{fmt}", f"-n{limit}"]
-    return run_git_command(args)
+    # --- 1. Costruzione del Comando Base ---
+    logs_args = ["log", f"--pretty=format:{fmt}"]
+
+    # --- 2. Aggiunta dei filtri ---
+    # Limit (Già, implementato ma ora utilizza il dizionario)
+    if filters.get("limit"):
+        logs_args.append(f"-n {filters['limit']}")
+    # Author
+    if filters.get("author"):
+        logs_args.append(f"--author={filters['author']}")
+    # Since (Data Inzio)
+    if filters.get("since"):
+        logs_args.append(f"--since={filters['since']}")
+    # Until (Data Fine)
+    if filters.get("until"):
+        logs_args.append(f"--until={filters['until']}")
+
+    # --- 3. Esecuzione del Comando ---
+    logs_args.append("--all")  # Mantiene l'opzione per includere tutti i branch
+    return run_git_command(logs_args)
 
 
 """Trasforma la stringa grezza di output di Git in una lista di oggetti Commiit"""
@@ -107,7 +122,7 @@ def parse_commits(raw_output: str) -> List[Commit]:
                 hash_short=parts[0],
                 hash_full=parts[1],
                 author_name=parts[2],
-                author_email=[3],
+                author_email=parts[3],
                 timestamp=int(parts[4]),
                 message=parts[5],
             )
