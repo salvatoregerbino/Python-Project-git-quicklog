@@ -13,6 +13,10 @@ from rich.style import (
     Style,
 )  # Importazione della classe Style per la gestione dello stile
 
+from rich.syntax import (
+    Syntax,
+)  # Importazione della classe Syntax per la gestione del syntax highlighting
+
 
 # Importazioni dei moduli interni
 from .models import (
@@ -21,6 +25,7 @@ from .models import (
 from .git_parser import (
     get_git_log_raw,
     parse_commits,
+    get_commit_diff,
 )  # Importazione della funzione parse_commits per la gestione dei commit
 
 
@@ -64,6 +69,22 @@ def display_commits(commits: List[Commit]):
 
     # Stampa la tabella sulla console
     console.print(table)
+
+    # ----------------------
+    # Visualizzazione del diff
+    # ----------------------
+
+
+def display_diff(commit_hash: str, diff_text: str):
+    """Visualizza il diff di un commit specifico usando la sintassi di syntax highlighting."""
+    console.print(
+        f"\n--- Dettaglio del commit {commit_hash} ---\n", style="bold yellow"
+    )
+
+    # Creazione di un oggetto Syntax per la libreria Rich
+    # Questa libreria permette di evidenziare le differenze tra i file come in un editor di codice
+    syntax = Syntax(diff_text, "diff", theme="monokai", line_numbers=True)
+    console.print(syntax)
 
     # ----------------------
     # LOGICA DI INGRESSO
@@ -114,15 +135,40 @@ def parse_args():
         default=None,
         help="Filtro per i commit che hanno modificato questo percorso (default: None)",
     )
+    parser.add_argument(
+        "--show",
+        type=str,
+        default=None,
+        help="Mostra il dettaglio (diff) di uno specifico commit dato il suo hash",
+    )
 
     return parser.parse_args()
 
     """Funzione principale di orchestrazione dell'applicazione"""
 
 
+# --- MODALITA' 1: VISUALIZZAZIONE DETTAGLIO (--show) ---
+
+
 def run_app():
     # 1. Analisi degli argomenti
     args = parse_args()
+
+    if args.show:
+        # Se l'utente ha chiesto di vedere il diff di un commit specifico , la funzione fa solo quello e si ferma
+        stdout, stderr = get_commit_diff(args.show)
+
+        # Controllo errori
+        if stderr:
+            console.print(
+                f"[/bold red]ERRORE RILEVATO:[/bold red] Commit '{args.show}' non trovato."
+            )
+            return
+
+        display_diff(args.show, stdout)
+        return
+
+    # --- MODALITA' 2: VISUALIZZAZIONE TABELLA (DEFAULT)---
 
     # Preparazione di un dizionario per i parametri del comando Git da passarea al parser
     filters = {
@@ -136,7 +182,7 @@ def run_app():
 
     console.print("--- Git QuickLog:  Caricamento dei Dati ---", style="bold yellow")
 
-    # 2. Estrazione dei dati grezzi , passando l'intero dizioanrio di filtri
+    # Estrazione dei dati grezzi , passando l'intero dizioanrio di filtri
     stdout, stderr = get_git_log_raw(filters=filters)
 
     # Controllo errori
@@ -145,7 +191,6 @@ def run_app():
             f"\n[/bold red]ERRORE RILEVATO: 'Errore di sistema Git[/bold red]'\n{stderr}"
         )
         return
-
-    # 3.Trasformazione in oggetti e Visualizzazione
+    # Trasformazione in oggetti e Visualizzazione
     commits = parse_commits(stdout)
     display_commits(commits)

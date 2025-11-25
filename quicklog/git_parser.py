@@ -141,3 +141,12 @@ def parse_commits(raw_output: str) -> List[Commit]:
             )
             commits.append(c)
     return commits
+
+
+"""Recupera il diff completo (le modifiche) di un commit specifico"""
+
+
+def get_commit_diff(commit_hash: str) -> Tuple[Optional[str], Optional[str]]:
+    # Scelta di output nativo , evitando di usare formattazione personalizzata
+    args = ["show", commit_hash]
+    return run_git_command(args)
