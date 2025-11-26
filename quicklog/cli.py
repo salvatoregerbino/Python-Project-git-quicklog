@@ -1,5 +1,6 @@
 # quicklog/cli.py
 
+
 import argparse  # Importazione del modulo argparse per la gestione degli argomenti da linea di comando
 from typing import List  # Importazione del tipo List per la tipizzazione
 from rich.console import (
@@ -9,13 +10,20 @@ from rich.table import (
     Table,
 )  # Importazione della classe Table per la creazione di tabelle
 
+
 from rich.style import (
     Style,
 )  # Importazione della classe Style per la gestione dello stile
 
+
 from rich.syntax import (
     Syntax,
 )  # Importazione della classe Syntax per la gestione del syntax highlighting
+
+
+from rich.panel import (
+    Panel,
+)  # Importazione della classe
 
 
 # Importazioni dei moduli interni
@@ -32,7 +40,71 @@ from .git_parser import (
 # Inizializza la console della libreria Rich
 console = Console()
 
+# --- 1. FUNZIONE HELP PERSONALIZZATA (VIEW) ---
 
+
+def print_help():
+    """
+    Renderizza una guida interattiva sostituendo quella di default.
+    """
+
+    # Intestazione con Panel
+    console.print(
+        Panel.fit(
+            "[bold cyan]Git QuickLog - Manuale Utente[/bold cyan]", border_style="cyan"
+        )
+    )
+    console.print(
+        "Un tool CLI avanzato per esplorare la storia di Git con stile.\n",
+        style="italic dim",
+    )
+
+    # Tabella dei Comandi
+    table = Table(
+        title="Lista Comandi e Opzioni",
+        header_style="bold magenta",
+        border_style="cyan",
+    )
+
+    table.add_column("Opzione", style="bold green", justify="left")
+    table.add_column("Descrizione", style="white")
+    table.add_column("Esempio", style="dim cyan")
+
+    # Definizione righe (Documentazione)
+    table.add_row("-h, --help", "Mostra questa schermata di aiuto", "")
+    table.add_row(
+        "--limit <N>", "Numero di commit da mostrare (Default: 10)", "--limit 5"
+    )
+    table.add_section()  # Linea separatrice
+
+    table.add_row(
+        "--author <nome>", "Filtra per nome o email autore", "--author 'Mario'"
+    )
+    table.add_row("--grep <testo>", "Cerca testo nel messaggio", "--grep 'fix'")
+    table.add_section()
+
+    table.add_row(
+        "--since <data>", "Commit successivi alla data", "--since '2023-01-01'"
+    )
+    table.add_row(
+        "--until <data>", "Commit precedenti alla data", "--until '1 week ago'"
+    )
+    table.add_row("--path <file>", "Filtra per file/percorso", "--path 'main.py'")
+    table.add_section()
+
+    table.add_row("--show <hash>", "Mostra il DIFF colorato", "--show a1b2c3d")
+
+    console.print(table)
+
+    console.print("\n[bold yellow]Esempio Completo:[/bold yellow]")
+    console.print(
+        "  python -m quicklog --limit 5 --author 'Salvatore' --grep 'feat'",
+        style="on black bold white",
+    )
+    print()  # Spaziatura finale
+
+
+# --- 2. FUNZIONI DI VISUALIZZAZIONE DATI (Esistenti) ---
 def display_commits(commits: List[Commit]):
     """Stampa una lista di commit in formato tabellare utilizzando la libreria Rich."""
     if not commits:
@@ -43,7 +115,7 @@ def display_commits(commits: List[Commit]):
 
     # -- Creazione della tabella Rich ---
     table = Table(
-        title="Git QuickLog",
+        title="Risultati Ricerca",
         style=Style(color="cyan"),
         show_header=True,
         header_style="bold magenta",
@@ -97,8 +169,13 @@ def display_diff(commit_hash: str, diff_text: str):
 def parse_args():
     parser = argparse.ArgumentParser(
         description="GitQuickLog: Visualizza i commit in formato strutturato. ",
-        epilog="Esempio: python -m quicklog --limit 5 --author 'Mario' --since '2025-01-01'",
+        add_help=False,
     )
+
+    parser.add_argument(
+        "-h", "--help", action="store_true", help="Mostra aiuto personalizzato"
+    )
+
     parser.add_argument(
         "--limit",
         type=int,
@@ -154,6 +231,13 @@ def run_app():
     # 1. Analisi degli argomenti
     args = parse_args()
 
+    # --- BRANCH 1: HELP PERSONALIZZATO ---
+    if args.help:
+        print_help()  # Chiamata alla nuova funzione grafica
+        return  # Interrompe l'esecuzione qui
+
+    # --- BRANCH 2: MODALITA' SHOW (Diff) ---
+
     if args.show:
         # Se l'utente ha chiesto di vedere il diff di un commit specifico , la funzione fa solo quello e si ferma
         stdout, stderr = get_commit_diff(args.show)
@@ -168,7 +252,7 @@ def run_app():
         display_diff(args.show, stdout)
         return
 
-    # --- MODALITA' 2: VISUALIZZAZIONE TABELLA (DEFAULT)---
+    # --- MODALITA' 3: VISUALIZZAZIONE TABELLA (DEFAULT)---
 
     # Preparazione di un dizionario per i parametri del comando Git da passarea al parser
     filters = {
