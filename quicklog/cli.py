@@ -245,7 +245,7 @@ def run_app():
         # Controllo errori
         if stderr:
             console.print(
-                f"[/bold red]ERRORE RILEVATO:[/bold red] Commit '{args.show}' non trovato."
+                f"[bold red]ERRORE RILEVATO:[/bold red] Commit '{args.show}' non trovato."
             )
             return
 
@@ -272,7 +272,7 @@ def run_app():
     # Controllo errori
     if stderr:
         console.print(
-            f"\n[/bold red]ERRORE RILEVATO: 'Errore di sistema Git[/bold red]'\n{stderr}"
+            f"\n[bold red]ERRORE RILEVATO: 'Errore di sistema Git[/bold red]'\n{stderr}"
         )
         return
     # Trasformazione in oggetti e Visualizzazione

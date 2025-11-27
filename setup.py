@@ -9,7 +9,7 @@ setup(
     author="Salvatore Gerbino",
     author_email="salvatore.gerbino@edu-its.it",
     # Trova in maniera automatica  'quicklog' come package
-    packages=find_packages(),
+    packages=["quicklog"],
     # Elenco delle dependeces che verrrano installate automaticamente
     install_requires=[
         "rich",

@@ -1,0 +1,5 @@
+# Ignora i file di build e distribuzione Python e i metadati locali
+build/
+dist/
+*.egg-info/
+*.egg
