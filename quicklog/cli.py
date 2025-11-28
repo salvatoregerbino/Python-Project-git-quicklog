@@ -98,7 +98,7 @@ def print_help():
 
     console.print("\n[bold yellow]Esempio Completo:[/bold yellow]")
     console.print(
-        "  python -m quicklog --limit 5 --author 'Salvatore' --grep 'feat'",
+        "  quicklog --limit 5 --author 'Salvatore' --grep 'feat' ",
         style="on black bold white",
     )
     print()  # Spaziatura finale
@@ -109,7 +109,7 @@ def display_commits(commits: List[Commit]):
     """Stampa una lista di commit in formato tabellare utilizzando la libreria Rich."""
     if not commits:
         console.print(
-            "[yellow]Nessun commit trovato nella repository corrente.", style="warning"
+            "[bold yellow]Nessun commit trovato nella repository corrente.[/bold yellow]"
         )
         return
 
@@ -119,6 +119,7 @@ def display_commits(commits: List[Commit]):
         style=Style(color="cyan"),
         show_header=True,
         header_style="bold magenta",
+        show_lines=True,
     )
 
     # -- Aggiunta delle colonne alla tabella ---
