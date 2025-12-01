@@ -9,6 +9,11 @@
 
 A differenza del comando nativo `git log`, QuickLog offre un'interfaccia **colorata**, **tabellare** e **altamente leggibile**, pensata per sviluppatori che vogliono analizzare rapidamente il proprio codice senza ricordare comandi complessi.
 
+Esempio di Output:
+![Screenshot](docs/images/demo_main_01.gif)
+
+##
+
 ![Screenshot](docs/images/demo_main.gif)
 
 
