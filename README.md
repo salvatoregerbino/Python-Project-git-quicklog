@@ -80,10 +80,9 @@ quicklog --help
 quicklog --author "Salvatore" --grep "fix"
 
 ```
-📚 Documentazione Completa
+## 📚 Documentazione Completa
 
-Vuoi scoprire tutti i comandi, i filtri avanzati e i trucchi? 
-👉 LEGGI LA GUIDA UTENTE COMPLETA (docs/USER_GUIDE.md)
+Vuoi scoprire tutti i comandi, i filtri avanzati e i trucchi?
 
-Sviluppato da Salvatore Gerbino
+👉 **[LEGGI LA GUIDA UTENTE COMPLETA](docs/USER_GUIDE.md)**
 
