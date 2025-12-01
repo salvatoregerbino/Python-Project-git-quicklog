@@ -122,11 +122,15 @@ Cosa vedrai: Il terminale mostrerà le differenze ("Diff") con evidenziazione de
 *   🟢 Verde (`+`): Righe aggiunte.
 *   🔴 Rosso (`-`): Righe rimosse.
 
+**Esempio di Output:**
+![Diff View](images/diff_view.png)
+
 ## <a name="6-risoluzione-problemi-troubleshooting"></a>6. Risoluzione Problemi (Troubleshooting)
 
 ### Errore: `quicklog: command not found`
 
 Causa: La cartella degli script di Python non è nel `PATH` del sistema.
+
 Soluzione:
 
 1.  Assicurati di aver attivato l'ambiente virtuale (`source .venv/bin/activate`).
@@ -135,9 +139,11 @@ Soluzione:
 ### Errore: `fatal: not a git repository`
 
 Causa: Stai eseguendo il comando in una cartella normale, non in un repository Git.
+
 Soluzione: Spostati in una cartella dove hai inizializzato git (`git init`) o clonato un progetto.
 
 ### La tabella si vede male o i colori sono strani
 
 Causa: Il tuo terminale potrebbe non supportare i colori `TrueColor`.
+
 Soluzione: Prova ad usare un terminale moderno come Windows Terminal, Git Bash o iTerm2. QuickLog adatta automaticamente i colori, ma richiede un terminale standard ANSI.
