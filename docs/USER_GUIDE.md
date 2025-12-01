@@ -123,7 +123,7 @@ Cosa vedrai: Il terminale mostrerà le differenze ("Diff") con evidenziazione de
 *   🔴 Rosso (`-`): Righe rimosse.
 
 **Esempio di Output:**
-![Diff View](images/diff_view.png)
+![Diff View](images/diff_view.gif)
 
 ## <a name="6-risoluzione-problemi-troubleshooting"></a>6. Risoluzione Problemi (Troubleshooting)
 
